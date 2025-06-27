@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Email Domain Validator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-book text-blue-500 text-2xl"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">API Documentation</h1>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="/" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        <i class="fas fa-home mr-2"></i>Back to Validator
+                    </a>
+                    <a href="/docs" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                        <i class="fas fa-code mr-2"></i>Swagger UI
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            
+            <!-- Navigation -->
+            <div class="mb-8">
+                <nav class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex flex-wrap gap-2">
+                        <a href="#overview" class="px-3 py-2 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition">Overview</a>
+                        <a href="#authentication" class="px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition">Authentication</a>
+                        <a href="#single-validation" class="px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition">Single Validation</a>
+                        <a href="#batch-validation" class="px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition">Batch Validation</a>
+                        <a href="#admin-endpoints" class="px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition">Admin</a>
+                        <a href="#examples" class="px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition">Examples</a>
+                        <a href="#sdks" class="px-3 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition">SDKs</a>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Overview -->
+            <section id="overview" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                        API Overview
+                    </h2>
+                    <div class="space-y-4">
+                        <p class="text-gray-700">
+                            The Email Domain Validator API provides comprehensive domain validation and classification services. 
+                            It analyzes email domains and classifies them into 7 categories with quality scoring and recommendations.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border border-blue-200 rounded-lg p-4">
+                                <h3 class="font-semibold text-blue-800 mb-2">Base URL</h3>
+                                <code class="bg-blue-50 px-2 py-1 rounded text-sm">https://your-domain.com/api/v1</code>
+                            </div>
+                            <div class="border border-green-200 rounded-lg p-4">
+                                <h3 class="font-semibold text-green-800 mb-2">Response Format</h3>
+                                <code class="bg-green-50 px-2 py-1 rounded text-sm">JSON</code>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-blue-800 mb-2">Domain Categories</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded">Corporate</span>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">Public Provider</span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded">Educational</span>
+                                <span class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded">Government</span>
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded">Disposable</span>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">Suspicious</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded">Unreachable</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Authentication -->
+            <section id="authentication" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-key text-yellow-500 mr-2"></i>
+                        Authentication
+                    </h2>
+                    <p class="text-gray-700 mb-4">
+                        Most endpoints are public and don't require authentication. Admin endpoints require API key authentication.
+                    </p>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-yellow-800 mb-2">API Key Header</h3>
+                        <pre><code class="language-http">X-API-Key: your-api-key-here</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Single Domain Validation -->
+            <section id="single-validation" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-search text-blue-500 mr-2"></i>
+                        Single Domain Validation
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Endpoint Info -->
+                        <div class="border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="px-2 py-1 bg-blue-500 text-white rounded text-sm font-mono">POST</span>
+                                <span class="ml-3 font-mono text-lg">/domain/validate</span>
+                            </div>
+                            <p class="text-gray-600">Validates a single domain or email address and returns detailed classification information.</p>
+                        </div>
+
+                        <!-- Request -->
+                        <div>
+                            <h3 class="font-semibold mb-2">Request Body</h3>
+                            <pre><code class="language-json">{
+  "domain": "example.com"
+}</code></pre>
+                        </div>
+
+                        <!-- Response -->
+                        <div>
+                            <h3 class="font-semibold mb-2">Response</h3>
+                            <pre><code class="language-json">{
+  "domain": "example.com",
+  "domain_type": "corporate",
+  "validation_status": "valid",
+  "quality_score": 8.5,
+  "recommendation": "accept",
+  "metadata": {
+    "has_mx_record": true,
+    "has_a_record": true,
+    "mx_servers": ["mail.example.com"],
+    "website_accessible": true,
+    "has_ssl_certificate": true,
+    "whois_registrar": null,
+    "whois_creation_date": null,
+    "whois_country": null
+  },
+  "checked_at": "2024-01-01T12:00:00Z"
+}</code></pre>
+                        </div>
+
+                        <!-- cURL Example -->
+                        <div>
+                            <h3 class="font-semibold mb-2">cURL Example</h3>
+                            <pre><code class="language-bash">curl -X POST "https://your-domain.com/api/v1/domain/validate" \
+  -H "Content-Type: application/json" \
+  -d '{"domain": "example.com"}'</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Batch Validation -->
+            <section id="batch-validation" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-list text-green-500 mr-2"></i>
+                        Batch Domain Validation
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Endpoint Info -->
+                        <div class="border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="px-2 py-1 bg-green-500 text-white rounded text-sm font-mono">POST</span>
+                                <span class="ml-3 font-mono text-lg">/domain/validate-batch</span>
+                            </div>
+                            <p class="text-gray-600">Validates multiple domains in a single request. Useful for processing lists of domains.</p>
+                        </div>
+
+                        <!-- Request -->
+                        <div>
+                            <h3 class="font-semibold mb-2">Request Body</h3>
+                            <pre><code class="language-json">{
+  "domains": [
+    "example.com",
+    "user@company.com",
+    "university.edu",
+    "tempmail.org"
+  ]
+}</code></pre>
+                        </div>
+
+                        <!-- Response -->
+                        <div>
+                            <h3 class="font-semibold mb-2">Response</h3>
+                            <pre><code class="language-json">{
+  "results": [
+    {
+      "domain": "example.com",
+      "domain_type": "corporate",
+      "validation_status": "valid",
+      "quality_score": 8.5,
+      "recommendation": "accept",
+      "metadata": { ... },
+      "checked_at": "2024-01-01T12:00:00Z"
+    },
+    {
+      "domain": "company.com",
+      "domain_type": "corporate",
+      "validation_status": "valid",
+      "quality_score": 9.0,
+      "recommendation": "accept",
+      "metadata": { ... },
+      "checked_at": "2024-01-01T12:00:01Z"
+    }
+  ],
+  "total_processed": 4,
+  "processing_time_seconds": 2.35
+}</code></pre>
+                        </div>
+
+                        <!-- cURL Example -->
+                        <div>
+                            <h3 class="font-semibold mb-2">cURL Example</h3>
+                            <pre><code class="language-bash">curl -X POST "https://your-domain.com/api/v1/domain/validate-batch" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domains": [
+      "example.com",
+      "test@company.com",
+      "university.edu"
+    ]
+  }'</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Endpoints -->
+            <section id="admin-endpoints" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-shield-alt text-purple-500 mr-2"></i>
+                        Admin Endpoints
+                    </h2>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                            <span class="font-semibold text-yellow-800">Authentication Required</span>
+                        </div>
+                        <p class="text-yellow-700 mt-1">Admin endpoints require API key authentication via X-API-Key header.</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- Whitelist Management -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4">Whitelist Management</h3>
+                            
+                            <!-- Add to Whitelist -->
+                            <div class="mb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="px-2 py-1 bg-green-500 text-white rounded text-sm font-mono">POST</span>
+                                    <span class="ml-3 font-mono">/admin/whitelist</span>
+                                </div>
+                                <pre><code class="language-json">{
+  "domain": "trusted-company.com",
+  "notes": "Verified business partner"
+}</code></pre>
+                            </div>
+
+                            <!-- Remove from Whitelist -->
+                            <div class="mb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="px-2 py-1 bg-red-500 text-white rounded text-sm font-mono">DELETE</span>
+                                    <span class="ml-3 font-mono">/admin/whitelist/{domain}</span>
+                                </div>
+                            </div>
+
+                            <!-- Get Whitelist -->
+                            <div class="mb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="px-2 py-1 bg-blue-500 text-white rounded text-sm font-mono">GET</span>
+                                    <span class="ml-3 font-mono">/admin/whitelist</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Blacklist Management -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4">Blacklist Management</h3>
+                            
+                            <!-- Add to Blacklist -->
+                            <div class="mb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="px-2 py-1 bg-green-500 text-white rounded text-sm font-mono">POST</span>
+                                    <span class="ml-3 font-mono">/admin/blacklist</span>
+                                </div>
+                                <pre><code class="language-json">{
+  "domain": "spam-domain.com",
+  "notes": "Known spam source"
+}</code></pre>
+                            </div>
+
+                            <!-- Remove from Blacklist -->
+                            <div class="mb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="px-2 py-1 bg-red-500 text-white rounded text-sm font-mono">DELETE</span>
+                                    <span class="ml-3 font-mono">/admin/blacklist/{domain}</span>
+                                </div>
+                            </div>
+
+                            <!-- Get Blacklist -->
+                            <div class="mb-4">
+                                <div class="flex items-center mb-2">
+                                    <span class="px-2 py-1 bg-blue-500 text-white rounded text-sm font-mono">GET</span>
+                                    <span class="ml-3 font-mono">/admin/blacklist</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin Stats -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4">Statistics</h3>
+                            <div class="flex items-center mb-2">
+                                <span class="px-2 py-1 bg-blue-500 text-white rounded text-sm font-mono">GET</span>
+                                <span class="ml-3 font-mono">/admin/stats</span>
+                            </div>
+                            <pre><code class="language-json">{
+  "total_domains": 1500,
+  "whitelisted": 45,
+  "blacklisted": 23,
+  "manual_overrides": 68
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Examples -->
+            <section id="examples" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-code text-green-500 mr-2"></i>
+                        Code Examples
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <!-- JavaScript -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4">JavaScript (fetch)</h3>
+                            <pre><code class="language-javascript">// Single domain validation
+async function validateDomain(domain) {
+  const response = await fetch('/api/v1/domain/validate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ domain })
+  });
+  
+  const result = await response.json();
+  return result;
+}
+
+// Batch validation
+async function validateBatch(domains) {
+  const response = await fetch('/api/v1/domain/validate-batch', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ domains })
+  });
+  
+  const result = await response.json();
+  return result;
+}
+
+// Usage
+validateDomain('example.com').then(result => {
+  console.log('Domain type:', result.domain_type);
+  console.log('Quality score:', result.quality_score);
+  console.log('Recommendation:', result.recommendation);
+});</code></pre>
+                        </div>
+
+                        <!-- Python -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4">Python (requests)</h3>
+                            <pre><code class="language-python">import requests
+import json
+
+class EmailDomainValidator:
+    def __init__(self, base_url="https://your-domain.com/api/v1"):
+        self.base_url = base_url
+        
+    def validate_domain(self, domain):
+        """Validate a single domain"""
+        response = requests.post(
+            f"{self.base_url}/domain/validate",
+            json={"domain": domain}
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    def validate_batch(self, domains):
+        """Validate multiple domains"""
+        response = requests.post(
+            f"{self.base_url}/domain/validate-batch",
+            json={"domains": domains}
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    def add_to_whitelist(self, domain, notes="", api_key=None):
+        """Add domain to whitelist (requires API key)"""
+        headers = {}
+        if api_key:
+            headers["X-API-Key"] = api_key
+            
+        response = requests.post(
+            f"{self.base_url}/admin/whitelist",
+            json={"domain": domain, "notes": notes},
+            headers=headers
+        )
+        response.raise_for_status()
+        return response.json()
+
+# Usage example
+validator = EmailDomainValidator()
+
+# Single validation
+result = validator.validate_domain("example.com")
+print(f"Domain: {result['domain']}")
+print(f"Type: {result['domain_type']}")
+print(f"Score: {result['quality_score']}")
+print(f"Recommendation: {result['recommendation']}")
+
+# Batch validation
+domains = ["example.com", "gmail.com", "tempmail.org"]
+batch_result = validator.validate_batch(domains)
+print(f"Processed {batch_result['total_processed']} domains")
+for result in batch_result['results']:
+    print(f"{result['domain']}: {result['recommendation']}")
+</code></pre>
+                        </div>
+
+                        <!-- cURL -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4">Shell Script (cURL)</h3>
+                            <pre><code class="language-bash">#!/bin/bash
+
+# Single domain validation
+validate_domain() {
+  local domain=$1
+  curl -s -X POST "https://your-domain.com/api/v1/domain/validate" \
+    -H "Content-Type: application/json" \
+    -d "{\"domain\": \"$domain\"}" | jq
+}
+
+# Batch validation
+validate_batch() {
+  local domains_json=$1
+  curl -s -X POST "https://your-domain.com/api/v1/domain/validate-batch" \
+    -H "Content-Type: application/json" \
+    -d "{\"domains\": $domains_json}" | jq
+}
+
+# Usage examples
+validate_domain "example.com"
+
+validate_batch '["example.com", "gmail.com", "tempmail.org"]'
+
+# Add to whitelist (requires API key)
+add_to_whitelist() {
+  local domain=$1
+  local notes=$2
+  local api_key=$3
+  
+  curl -s -X POST "https://your-domain.com/api/v1/admin/whitelist" \
+    -H "Content-Type: application/json" \
+    -H "X-API-Key: $api_key" \
+    -d "{\"domain\": \"$domain\", \"notes\": \"$notes\"}" | jq
+}
+
+add_to_whitelist "trusted-company.com" "Business partner" "your-api-key"</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SDKs -->
+            <section id="sdks" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-cube text-purple-500 mr-2"></i>
+                        SDKs and Libraries
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Python SDK -->
+                        <div class="border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center mb-3">
+                                <i class="fab fa-python text-blue-500 text-xl mr-2"></i>
+                                <h3 class="font-semibold">Python SDK</h3>
+                            </div>
+                            <pre class="text-sm"><code>pip install edv-python-sdk</code></pre>
+                            <p class="text-gray-600 text-sm mt-2">Official Python SDK with async support and type hints.</p>
+                        </div>
+
+                        <!-- JavaScript SDK -->
+                        <div class="border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center mb-3">
+                                <i class="fab fa-js-square text-yellow-500 text-xl mr-2"></i>
+                                <h3 class="font-semibold">JavaScript SDK</h3>
+                            </div>
+                            <pre class="text-sm"><code>npm install edv-js-sdk</code></pre>
+                            <p class="text-gray-600 text-sm mt-2">TypeScript-ready SDK for Node.js and browsers.</p>
+                        </div>
+
+                        <!-- PHP SDK -->
+                        <div class="border border-purple-200 rounded-lg p-4">
+                            <div class="flex items-center mb-3">
+                                <i class="fab fa-php text-purple-500 text-xl mr-2"></i>
+                                <h3 class="font-semibold">PHP SDK</h3>
+                            </div>
+                            <pre class="text-sm"><code>composer require edv/php-sdk</code></pre>
+                            <p class="text-gray-600 text-sm mt-2">PSR-4 compliant PHP library with comprehensive documentation.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-800 mb-2">Community SDKs</h3>
+                        <p class="text-blue-700 text-sm">
+                            Don't see your language? Check our <a href="#" class="underline">GitHub organization</a> for community-maintained SDKs in Go, Ruby, C#, and more.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Codes -->
+            <section id="errors" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                        Error Codes
+                    </h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Code</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Status</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-gray-300 px-4 py-2 font-mono">400</td>
+                                    <td class="border border-gray-300 px-4 py-2">Bad Request</td>
+                                    <td class="border border-gray-300 px-4 py-2">Invalid request format or missing required fields</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="border border-gray-300 px-4 py-2 font-mono">401</td>
+                                    <td class="border border-gray-300 px-4 py-2">Unauthorized</td>
+                                    <td class="border border-gray-300 px-4 py-2">Missing or invalid API key for admin endpoints</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 px-4 py-2 font-mono">429</td>
+                                    <td class="border border-gray-300 px-4 py-2">Too Many Requests</td>
+                                    <td class="border border-gray-300 px-4 py-2">Rate limit exceeded (10 req/s for validation, 1 req/s for batch)</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="border border-gray-300 px-4 py-2 font-mono">500</td>
+                                    <td class="border border-gray-300 px-4 py-2">Internal Server Error</td>
+                                    <td class="border border-gray-300 px-4 py-2">Validation service error or DNS lookup failure</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Rate Limits -->
+            <section id="rate-limits" class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-tachometer-alt text-orange-500 mr-2"></i>
+                        Rate Limits
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-blue-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-blue-800 mb-2">Standard Endpoints</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li>• <strong>Single validation:</strong> 10 requests/second</li>
+                                <li>• <strong>Cache/stats:</strong> 10 requests/second</li>
+                                <li>• <strong>Burst allowance:</strong> 20 requests</li>
+                            </ul>
+                        </div>
+                        <div class="border border-orange-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-orange-800 mb-2">Batch Endpoints</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li>• <strong>Batch validation:</strong> 1 request/second</li>
+                                <li>• <strong>Admin operations:</strong> 5 requests/second</li>
+                                <li>• <strong>Burst allowance:</strong> 2 requests</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <p class="text-orange-700 text-sm">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Rate limits are enforced per IP address. Contact support for higher limits if needed.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

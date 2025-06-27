@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Domain Validator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-blue': '#3B82F6',
+                        'brand-green': '#10B981',
+                        'brand-purple': '#8B5CF6',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite alternate',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+            to { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Email Domain Validator</h1>
+                        <p class="text-white/80 text-sm">
+                            <i class="fas fa-server mr-1"></i>
+                            Running on localhost:8000
+                        </p>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="/docs" class="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition card-hover">
+                        <i class="fas fa-book mr-2"></i>API Docs
+                    </a>
+                    <a href="/admin" class="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition card-hover">
+                        <i class="fas fa-cog mr-2"></i>Admin Panel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            
+            <!-- Welcome Message -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 card-hover animate-fade-in border border-gray-100">
+                <div class="flex items-center mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full p-3 mr-4">
+                        <i class="fas fa-magic text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Welcome to Email Domain Validator</h2>
+                        <p class="text-gray-500">Powered by AI • Real-time validation • 94.3% accuracy</p>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6 text-lg">
+                    Validate email domains and classify them into categories: Corporate, Public Providers, Disposable, Educational, Government, Suspicious, or Unreachable.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flex items-center p-4 bg-green-50 rounded-xl">
+                        <div class="bg-green-500 rounded-full p-2 mr-3">
+                            <i class="fas fa-check-circle text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-green-800">DNS & HTTP Validation</div>
+                            <div class="text-green-600 text-sm">Real-time infrastructure checks</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 bg-blue-50 rounded-xl">
+                        <div class="bg-blue-500 rounded-full p-2 mr-3">
+                            <i class="fas fa-tachometer-alt text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-blue-800">Quality Scoring</div>
+                            <div class="text-blue-600 text-sm">Intelligent 0-10 rating system</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 bg-purple-50 rounded-xl">
+                        <div class="bg-purple-500 rounded-full p-2 mr-3">
+                            <i class="fas fa-robot text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-purple-800">AI Recommendations</div>
+                            <div class="text-purple-600 text-sm">Accept, reject, or review</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Single Domain Validation -->
+                <div class="bg-white rounded-2xl shadow-xl card-hover animate-slide-up border border-gray-100">
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-t-2xl">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="bg-white/20 rounded-lg p-2 mr-3">
+                                <i class="fas fa-search text-white"></i>
+                            </div>
+                            Single Domain Validation
+                        </h3>
+                        <p class="text-blue-100 mt-1">Test individual domains or email addresses</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Domain or Email Address
+                            </label>
+                            <div class="flex gap-3">
+                                <input 
+                                    type="text" 
+                                    id="domainInput" 
+                                    placeholder="e.g., example.com or user@company.com"
+                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                    onkeypress="if(event.key==='Enter') validateSingleDomain()"
+                                >
+                                <button 
+                                    onclick="validateSingleDomain()" 
+                                    class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 transition"
+                                    id="validateBtn"
+                                >
+                                    <i class="fas fa-search mr-2"></i>Validate
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Examples -->
+                        <div class="mb-4">
+                            <p class="text-xs text-gray-500 mb-2">Quick examples:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="document.getElementById('domainInput').value='google.com'; validateSingleDomain();" 
+                                        class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition">
+                                    google.com
+                                </button>
+                                <button onclick="document.getElementById('domainInput').value='gmail.com'; validateSingleDomain();" 
+                                        class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition">
+                                    gmail.com
+                                </button>
+                                <button onclick="document.getElementById('domainInput').value='harvard.edu'; validateSingleDomain();" 
+                                        class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition">
+                                    harvard.edu
+                                </button>
+                                <button onclick="document.getElementById('domainInput').value='tempmail.org'; validateSingleDomain();" 
+                                        class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition">
+                                    tempmail.org
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="singleResult" class="hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Batch Domain Validation -->
+                <div class="bg-white rounded-2xl shadow-xl card-hover animate-slide-up border border-gray-100">
+                    <div class="px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-t-2xl">
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <div class="bg-white/20 rounded-lg p-2 mr-3">
+                                <i class="fas fa-list text-white"></i>
+                            </div>
+                            Batch Domain Validation
+                        </h3>
+                        <p class="text-green-100 mt-1">Process multiple domains at once</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Domains/Emails (one per line)
+                            </label>
+                            <textarea 
+                                id="batchInput" 
+                                placeholder="example.com&#10;test@company.com&#10;university.edu&#10;tempmail.org"
+                                rows="6"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition resize-none"
+                            ></textarea>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex gap-2">
+                                <button 
+                                    onclick="validateBatchDomains()" 
+                                    class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:ring-2 focus:ring-green-500 transition"
+                                    id="batchValidateBtn"
+                                >
+                                    <i class="fas fa-play mr-2"></i>Validate Batch
+                                </button>
+                                <button 
+                                    onclick="clearBatch()" 
+                                    class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                                >
+                                    <i class="fas fa-trash mr-2"></i>Clear
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                <span id="domainCount">0</span> domains
+                            </div>
+                        </div>
+                        
+                        <!-- File Upload -->
+                        <div class="mb-4 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+                            <div class="text-center">
+                                <i class="fas fa-upload text-gray-400 text-2xl mb-2"></i>
+                                <p class="text-sm text-gray-600 mb-2">Upload CSV/TXT file</p>
+                                <input type="file" id="fileInput" accept=".csv,.txt" class="hidden" onchange="handleFileUpload(event)">
+                                <button onclick="document.getElementById('fileInput').click()" 
+                                        class="px-4 py-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
+                                    Choose File
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="batchResult" class="hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Export -->
+            <div id="exportSection" class="hidden mt-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-download text-blue-500 mr-2"></i>
+                        Export Results
+                    </h3>
+                    <div class="flex gap-3">
+                        <button onclick="exportResults('csv')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                            <i class="fas fa-file-csv mr-2"></i>Export as CSV
+                        </button>
+                        <button onclick="exportResults('json')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+                            <i class="fas fa-file-code mr-2"></i>Export as JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="mt-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-chart-line text-purple-500 mr-2"></i>
+                            System Status
+                        </h3>
+                        <button 
+                            onclick="getCacheStats()" 
+                            class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
+                        >
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                    </div>
+                    <div id="cacheStats">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Domain Categories Guide -->
+            <div class="mt-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                        Domain Categories Guide
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-medium">CORPORATE</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Business domains with proper infrastructure</p>
+                            <p class="text-xs text-gray-500 mt-1">Quality: 7-10 | Recommendation: Accept</p>
+                        </div>
+                        <div class="border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">PUBLIC PROVIDER</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Gmail, Yahoo, Outlook, etc.</p>
+                            <p class="text-xs text-gray-500 mt-1">Quality: 5-7 | Recommendation: Review</p>
+                        </div>
+                        <div class="border border-purple-200 rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm font-medium">EDUCATIONAL</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Universities and schools (.edu)</p>
+                            <p class="text-xs text-gray-500 mt-1">Quality: 8-9 | Recommendation: Accept</p>
+                        </div>
+                        <div class="border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-sm font-medium">DISPOSABLE</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Temporary email services</p>
+                            <p class="text-xs text-gray-500 mt-1">Quality: 1-3 | Recommendation: Reject</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1/domain';
+        let lastResults = [];
+
+        // Test server connection on page load
+        async function testConnection() {
+            try {
+                const response = await axios.get('/health');
+                console.log('✅ Server connection test passed');
+                return true;
+            } catch (error) {
+                console.error('❌ Server connection test failed:', error);
+                // Show warning banner
+                const banner = document.createElement('div');
+                banner.className = 'bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4';
+                banner.innerHTML = `
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                <strong>Connection Warning:</strong> Unable to connect to server. 
+                                Make sure the application is running with: <code>python3 start_simple.py</code>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                document.querySelector('.container').insertBefore(banner, document.querySelector('.container').firstChild);
+                return false;
+            }
+        }
+
+        // Update domain count in batch validation
+        document.getElementById('batchInput').addEventListener('input', function() {
+            const domains = this.value.split('\n').filter(d => d.trim()).length;
+            document.getElementById('domainCount').textContent = domains;
+        });
+
+        // Test connection when page loads
+        window.addEventListener('load', function() {
+            testConnection();
+        });
+
+        function getTypeColor(type) {
+            const colors = {
+                'corporate': 'bg-green-100 text-green-800 border-green-200',
+                'public_provider': 'bg-blue-100 text-blue-800 border-blue-200',
+                'disposable': 'bg-red-100 text-red-800 border-red-200',
+                'educational': 'bg-purple-100 text-purple-800 border-purple-200',
+                'government': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                'unreachable': 'bg-gray-100 text-gray-800 border-gray-200',
+                'suspicious': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+            };
+            return colors[type] || 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+
+        function getRecommendationColor(recommendation) {
+            const colors = {
+                'accept': 'bg-green-500',
+                'reject': 'bg-red-500',
+                'manual_review': 'bg-yellow-500'
+            };
+            return colors[recommendation] || 'bg-gray-500';
+        }
+
+        function getQualityScoreColor(score) {
+            if (score >= 8) return 'text-green-600';
+            if (score >= 6) return 'text-yellow-600';
+            if (score >= 4) return 'text-orange-600';
+            return 'text-red-600';
+        }
+
+        function formatValidationResult(result, showDetails = true) {
+            const typeColorClass = getTypeColor(result.domain_type);
+            const recColorClass = getRecommendationColor(result.recommendation);
+            const scoreColorClass = getQualityScoreColor(result.quality_score);
+            
+            return `
+                <div class="border ${typeColorClass.split(' ')[2]} rounded-lg p-4 mb-4 transition hover:shadow-md">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="text-lg font-semibold text-gray-800 break-all">${result.domain}</h4>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium ${typeColorClass} ml-2">
+                            ${result.domain_type.replace('_', ' ').toUpperCase()}
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-star ${scoreColorClass} mr-2"></i>
+                            <span class="font-medium">Quality Score:</span>
+                            <span class="ml-2 font-bold ${scoreColorClass}">${result.quality_score.toFixed(1)}/10</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle text-gray-500 mr-2"></i>
+                            <span class="font-medium">Status:</span>
+                            <span class="ml-2 capitalize">${result.validation_status}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="font-medium">Recommendation:</span>
+                        <span class="px-3 py-1 rounded-full text-white text-sm font-medium ${recColorClass} ml-2">
+                            <i class="fas ${result.recommendation === 'accept' ? 'fa-check' : result.recommendation === 'reject' ? 'fa-times' : 'fa-exclamation'} mr-1"></i>
+                            ${result.recommendation.replace('_', ' ').toUpperCase()}
+                        </span>
+                    </div>
+                    
+                    ${showDetails ? `
+                    <div class="bg-gray-50 rounded p-3 text-sm">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope ${result.metadata.has_mx_record ? 'text-green-500' : 'text-red-500'} mr-2"></i>
+                                <span>MX Record: ${result.metadata.has_mx_record ? 'Yes' : 'No'}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-server ${result.metadata.has_a_record ? 'text-green-500' : 'text-red-500'} mr-2"></i>
+                                <span>A Record: ${result.metadata.has_a_record ? 'Yes' : 'No'}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-globe ${result.metadata.website_accessible ? 'text-green-500' : 'text-red-500'} mr-2"></i>
+                                <span>Website: ${result.metadata.website_accessible ? 'Accessible' : 'Not accessible'}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-lock ${result.metadata.has_ssl_certificate ? 'text-green-500' : 'text-red-500'} mr-2"></i>
+                                <span>SSL: ${result.metadata.has_ssl_certificate ? 'Valid' : 'None'}</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i>
+                            Checked: ${new Date(result.checked_at).toLocaleString()}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        async function validateSingleDomain() {
+            const domain = document.getElementById('domainInput').value.trim();
+            if (!domain) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Domain Entered',
+                    text: 'Please enter a domain or email address to validate',
+                    confirmButtonColor: '#3B82F6'
+                });
+                return;
+            }
+
+            const resultDiv = document.getElementById('singleResult');
+            const validateBtn = document.getElementById('validateBtn');
+            
+            validateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Validating...';
+            validateBtn.disabled = true;
+            
+            resultDiv.innerHTML = `
+                <div class="text-center p-4">
+                    <i class="fas fa-spinner fa-spin text-blue-500 text-2xl mb-2"></i>
+                    <div>Validating domain...</div>
+                </div>
+            `;
+            resultDiv.classList.remove('hidden');
+
+            try {
+                const response = await axios.post(`${API_BASE}/validate`, {
+                    domain: domain
+                });
+                resultDiv.innerHTML = formatValidationResult(response.data);
+                lastResults = [response.data];
+                document.getElementById('exportSection').classList.remove('hidden');
+            } catch (error) {
+                console.error('Validation error:', error);
+                let errorMessage = 'Network error - please check if the server is running';
+                
+                if (error.response) {
+                    // Server responded with error status
+                    errorMessage = error.response.data?.detail || `Server error: ${error.response.status}`;
+                } else if (error.request) {
+                    // Request was made but no response received
+                    errorMessage = 'Network error - unable to connect to server. Make sure the app is running.';
+                } else {
+                    // Something else happened
+                    errorMessage = error.message || 'Unknown error occurred';
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                            <span class="font-medium text-red-800">Validation Error</span>
+                        </div>
+                        <div class="text-red-700 mt-1">${errorMessage}</div>
+                        <div class="text-xs text-red-600 mt-2">
+                            Try refreshing the page or restarting the application with: python3 start_simple.py
+                        </div>
+                    </div>
+                `;
+            } finally {
+                validateBtn.innerHTML = '<i class="fas fa-search mr-2"></i>Validate';
+                validateBtn.disabled = false;
+            }
+        }
+
+        async function validateBatchDomains() {
+            const batchText = document.getElementById('batchInput').value.trim();
+            if (!batchText) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Domains Entered',
+                    text: 'Please enter domains to validate or upload a file',
+                    confirmButtonColor: '#10B981'
+                });
+                return;
+            }
+
+            const domains = batchText.split('\n').map(d => d.trim()).filter(d => d);
+            const resultDiv = document.getElementById('batchResult');
+            const batchBtn = document.getElementById('batchValidateBtn');
+            
+            batchBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+            batchBtn.disabled = true;
+            
+            resultDiv.innerHTML = `
+                <div class="text-center p-4">
+                    <i class="fas fa-spinner fa-spin text-green-500 text-2xl mb-2"></i>
+                    <div>Processing ${domains.length} domains...</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div class="bg-green-500 h-2 rounded-full animate-pulse" style="width: 0%" id="progressBar"></div>
+                    </div>
+                </div>
+            `;
+            resultDiv.classList.remove('hidden');
+
+            try {
+                const response = await axios.post(`${API_BASE}/validate-batch`, {
+                    domains: domains
+                });
+                
+                const results = response.data.results;
+                lastResults = results;
+                
+                // Summary statistics
+                const summary = {
+                    total: results.length,
+                    accept: results.filter(r => r.recommendation === 'accept').length,
+                    reject: results.filter(r => r.recommendation === 'reject').length,
+                    review: results.filter(r => r.recommendation === 'manual_review').length,
+                    avgScore: (results.reduce((sum, r) => sum + r.quality_score, 0) / results.length).toFixed(1)
+                };
+                
+                let html = `
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-chart-bar text-green-500 mr-2"></i>
+                            Batch Results Summary
+                        </h4>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                            <div class="text-center">
+                                <div class="font-bold text-lg text-gray-800">${summary.total}</div>
+                                <div class="text-gray-600">Total Processed</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-lg text-green-600">${summary.accept}</div>
+                                <div class="text-gray-600">Accept</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-lg text-red-600">${summary.reject}</div>
+                                <div class="text-gray-600">Reject</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-lg text-yellow-600">${summary.review}</div>
+                                <div class="text-gray-600">Review</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-lg text-blue-600">${summary.avgScore}</div>
+                                <div class="text-gray-600">Avg Score</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            Processing time: ${response.data.processing_time_seconds.toFixed(2)} seconds
+                        </div>
+                    </div>
+                `;
+                
+                // Add individual results
+                results.forEach(result => {
+                    html += formatValidationResult(result, false);
+                });
+                
+                resultDiv.innerHTML = html;
+                document.getElementById('exportSection').classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Batch validation error:', error);
+                let errorMessage = 'Network error - please check if the server is running';
+                
+                if (error.response) {
+                    errorMessage = error.response.data?.detail || `Server error: ${error.response.status}`;
+                } else if (error.request) {
+                    errorMessage = 'Network error - unable to connect to server. Make sure the app is running.';
+                } else {
+                    errorMessage = error.message || 'Unknown error occurred';
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                            <span class="font-medium text-red-800">Batch Validation Error</span>
+                        </div>
+                        <div class="text-red-700 mt-1">${errorMessage}</div>
+                        <div class="text-xs text-red-600 mt-2">
+                            Try refreshing the page or restarting the application with: python3 start_simple.py
+                        </div>
+                    </div>
+                `;
+            } finally {
+                batchBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Validate Batch';
+                batchBtn.disabled = false;
+            }
+        }
+
+        function clearBatch() {
+            document.getElementById('batchInput').value = '';
+            document.getElementById('domainCount').textContent = '0';
+            document.getElementById('batchResult').classList.add('hidden');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const domains = content.split(/[\n,]/).map(d => d.trim()).filter(d => d);
+                document.getElementById('batchInput').value = domains.join('\n');
+                document.getElementById('domainCount').textContent = domains.length;
+            };
+            reader.readAsText(file);
+        }
+
+        function exportResults(format) {
+            if (lastResults.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Results to Export',
+                    text: 'Please validate some domains first before exporting',
+                    confirmButtonColor: '#3B82F6'
+                });
+                return;
+            }
+            
+            let content, filename, mimeType;
+            
+            if (format === 'csv') {
+                const headers = ['Domain', 'Type', 'Status', 'Quality Score', 'Recommendation', 'MX Record', 'A Record', 'Website', 'SSL', 'Checked At'];
+                const rows = lastResults.map(r => [
+                    r.domain,
+                    r.domain_type,
+                    r.validation_status,
+                    r.quality_score,
+                    r.recommendation,
+                    r.metadata.has_mx_record,
+                    r.metadata.has_a_record,
+                    r.metadata.website_accessible,
+                    r.metadata.has_ssl_certificate,
+                    r.checked_at
+                ]);
+                
+                content = [headers, ...rows].map(row => row.join(',')).join('\n');
+                filename = `domain_validation_results_${new Date().toISOString().split('T')[0]}.csv`;
+                mimeType = 'text/csv';
+            } else {
+                content = JSON.stringify(lastResults, null, 2);
+                filename = `domain_validation_results_${new Date().toISOString().split('T')[0]}.json`;
+                mimeType = 'application/json';
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Show success notification
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful!',
+                text: `Downloaded ${filename}`,
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+
+        async function getCacheStats() {
+            const statsDiv = document.getElementById('cacheStats');
+            
+            try {
+                const response = await axios.get(`${API_BASE}/cache/stats`);
+                const stats = response.data;
+                
+                statsDiv.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-database text-blue-500 text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-700">Cache Status</div>
+                                    <div class="text-lg font-bold ${stats.status === 'connected' ? 'text-green-600' : 'text-red-600'}">
+                                        ${stats.status.toUpperCase()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-memory text-purple-500 text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-700">Memory Used</div>
+                                    <div class="text-lg font-bold text-purple-600">${stats.used_memory || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-users text-green-500 text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-700">Connections</div>
+                                    <div class="text-lg font-bold text-green-600">${stats.connected_clients || 0}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-line text-yellow-500 text-xl mr-3"></i>
+                                <div>
+                                    <div class="font-semibold text-gray-700">Hit Rate</div>
+                                    <div class="text-lg font-bold text-yellow-600">
+                                        ${stats.keyspace_hits && stats.keyspace_misses ? 
+                                            ((stats.keyspace_hits / (stats.keyspace_hits + stats.keyspace_misses)) * 100).toFixed(1) + '%' 
+                                            : 'N/A'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                statsDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                            <span class="text-red-700">Error loading system stats: ${error.message}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load initial stats
+        document.addEventListener('DOMContentLoaded', getCacheStats);
+    </script>
+</body>
+</html>

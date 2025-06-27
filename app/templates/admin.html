@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Email Domain Validator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800">Admin Panel</h1>
+                <a href="/" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    Back to Validator
+                </a>
+            </div>
+
+            <!-- Stats Dashboard -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-700">Total Domains</h3>
+                    <p class="text-3xl font-bold text-blue-600" id="total-domains">-</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-700">Whitelisted</h3>
+                    <p class="text-3xl font-bold text-green-600" id="whitelisted-count">-</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-700">Blacklisted</h3>
+                    <p class="text-3xl font-bold text-red-600" id="blacklisted-count">-</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-700">Manual Overrides</h3>
+                    <p class="text-3xl font-bold text-purple-600" id="manual-overrides">-</p>
+                </div>
+            </div>
+
+            <!-- Domain Management -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Add to Whitelist -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-semibold mb-4">Add to Whitelist</h2>
+                    <div class="space-y-4">
+                        <input 
+                            type="text" 
+                            id="whitelist-domain" 
+                            placeholder="Domain name"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                        >
+                        <textarea 
+                            id="whitelist-notes" 
+                            placeholder="Notes (optional)"
+                            rows="2"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                        ></textarea>
+                        <button 
+                            onclick="addToWhitelist()" 
+                            class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                        >
+                            Add to Whitelist
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add to Blacklist -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-semibold mb-4">Add to Blacklist</h2>
+                    <div class="space-y-4">
+                        <input 
+                            type="text" 
+                            id="blacklist-domain" 
+                            placeholder="Domain name"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                        >
+                        <textarea 
+                            id="blacklist-notes" 
+                            placeholder="Notes (optional)"
+                            rows="2"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                        ></textarea>
+                        <button 
+                            onclick="addToBlacklist()" 
+                            class="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                        >
+                            Add to Blacklist
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lists Management -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Whitelisted Domains -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-semibold">Whitelisted Domains</h2>
+                        <button 
+                            onclick="loadWhitelistedDomains()" 
+                            class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="whitelist-content" class="max-h-96 overflow-y-auto">
+                        <div class="text-center text-gray-500">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Blacklisted Domains -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-semibold">Blacklisted Domains</h2>
+                        <button 
+                            onclick="loadBlacklistedDomains()" 
+                            class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="blacklist-content" class="max-h-96 overflow-y-auto">
+                        <div class="text-center text-gray-500">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1/admin';
+
+        async function loadStats() {
+            try {
+                const response = await axios.get(`${API_BASE}/stats`);
+                const stats = response.data;
+                
+                document.getElementById('total-domains').textContent = stats.total_domains;
+                document.getElementById('whitelisted-count').textContent = stats.whitelisted;
+                document.getElementById('blacklisted-count').textContent = stats.blacklisted;
+                document.getElementById('manual-overrides').textContent = stats.manual_overrides;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function addToWhitelist() {
+            const domain = document.getElementById('whitelist-domain').value.trim();
+            const notes = document.getElementById('whitelist-notes').value.trim();
+            
+            if (!domain) {
+                alert('Please enter a domain name');
+                return;
+            }
+
+            try {
+                await axios.post(`${API_BASE}/whitelist`, {
+                    domain: domain,
+                    notes: notes
+                });
+                
+                alert('Domain added to whitelist successfully');
+                document.getElementById('whitelist-domain').value = '';
+                document.getElementById('whitelist-notes').value = '';
+                
+                loadStats();
+                loadWhitelistedDomains();
+            } catch (error) {
+                alert('Error adding to whitelist: ' + (error.response?.data?.detail || error.message));
+            }
+        }
+
+        async function addToBlacklist() {
+            const domain = document.getElementById('blacklist-domain').value.trim();
+            const notes = document.getElementById('blacklist-notes').value.trim();
+            
+            if (!domain) {
+                alert('Please enter a domain name');
+                return;
+            }
+
+            try {
+                await axios.post(`${API_BASE}/blacklist`, {
+                    domain: domain,
+                    notes: notes
+                });
+                
+                alert('Domain added to blacklist successfully');
+                document.getElementById('blacklist-domain').value = '';
+                document.getElementById('blacklist-notes').value = '';
+                
+                loadStats();
+                loadBlacklistedDomains();
+            } catch (error) {
+                alert('Error adding to blacklist: ' + (error.response?.data?.detail || error.message));
+            }
+        }
+
+        async function loadWhitelistedDomains() {
+            try {
+                const response = await axios.get(`${API_BASE}/whitelist`);
+                const domains = response.data;
+                
+                const content = document.getElementById('whitelist-content');
+                
+                if (domains.length === 0) {
+                    content.innerHTML = '<div class="text-center text-gray-500">No whitelisted domains</div>';
+                    return;
+                }
+                
+                content.innerHTML = domains.map(domain => `
+                    <div class="border border-gray-200 rounded p-3 mb-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-semibold">${domain.domain}</div>
+                                <div class="text-sm text-gray-600">${domain.notes || 'No notes'}</div>
+                                <div class="text-xs text-gray-400">Added: ${new Date(domain.added_at).toLocaleDateString()}</div>
+                            </div>
+                            <button 
+                                onclick="removeFromWhitelist('${domain.domain}')" 
+                                class="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('whitelist-content').innerHTML = 
+                    '<div class="text-center text-red-500">Error loading whitelisted domains</div>';
+            }
+        }
+
+        async function loadBlacklistedDomains() {
+            try {
+                const response = await axios.get(`${API_BASE}/blacklist`);
+                const domains = response.data;
+                
+                const content = document.getElementById('blacklist-content');
+                
+                if (domains.length === 0) {
+                    content.innerHTML = '<div class="text-center text-gray-500">No blacklisted domains</div>';
+                    return;
+                }
+                
+                content.innerHTML = domains.map(domain => `
+                    <div class="border border-gray-200 rounded p-3 mb-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-semibold">${domain.domain}</div>
+                                <div class="text-sm text-gray-600">${domain.notes || 'No notes'}</div>
+                                <div class="text-xs text-gray-400">Added: ${new Date(domain.added_at).toLocaleDateString()}</div>
+                            </div>
+                            <button 
+                                onclick="removeFromBlacklist('${domain.domain}')" 
+                                class="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('blacklist-content').innerHTML = 
+                    '<div class="text-center text-red-500">Error loading blacklisted domains</div>';
+            }
+        }
+
+        async function removeFromWhitelist(domain) {
+            if (!confirm(`Remove ${domain} from whitelist?`)) return;
+            
+            try {
+                await axios.delete(`${API_BASE}/whitelist/${domain}`);
+                alert('Domain removed from whitelist');
+                loadStats();
+                loadWhitelistedDomains();
+            } catch (error) {
+                alert('Error removing from whitelist: ' + (error.response?.data?.detail || error.message));
+            }
+        }
+
+        async function removeFromBlacklist(domain) {
+            if (!confirm(`Remove ${domain} from blacklist?`)) return;
+            
+            try {
+                await axios.delete(`${API_BASE}/blacklist/${domain}`);
+                alert('Domain removed from blacklist');
+                loadStats();
+                loadBlacklistedDomains();
+            } catch (error) {
+                alert('Error removing from blacklist: ' + (error.response?.data?.detail || error.message));
+            }
+        }
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadWhitelistedDomains();
+            loadBlacklistedDomains();
+        });
+    </script>
+</body>
+</html>
